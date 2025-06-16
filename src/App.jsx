@@ -703,11 +703,25 @@ const PricingSection = () => {
             
             <div className="mb-8 pt-4">
               <div className="flex items-baseline justify-center gap-2 mb-2">
+                {isAnnual && (
+                  <span className="text-3xl text-gray-400 dark:text-gray-500 line-through mr-2">
+                    ₹23,999
+                  </span>
+                )}
                 <span className="text-6xl md:text-7xl font-bold text-gray-900 dark:text-white">
                   {isAnnual ? '₹19,999' : '₹1,999'}
                 </span>
-                <span className="text-2xl text-gray-600 dark:text-gray-300">/month</span>
+                <span className="text-2xl text-gray-600 dark:text-gray-300">
+                  {isAnnual ? '/year' : '/month'}
+                </span>
               </div>
+              {isAnnual && (
+                <div className="flex items-center justify-center gap-2 text-green-600 dark:text-green-400 font-medium">
+                  <span className="text-2xl">🎉</span>
+                  <span>Save ₹4,000 annually!</span>
+                  <span className="text-2xl">✨</span>
+                </div>
+              )}
             </div>
             
             <h3 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Pro Plan - Everything Included</h3>
@@ -916,6 +930,7 @@ const ContactPage = () => {
                 </p>
                 
                 <div className="space-y-6">
+                  {/* Contact details temporarily commented out
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center">
                       <Mail className="w-6 h-6 text-white" />
@@ -944,6 +959,11 @@ const ContactPage = () => {
                       <h3 className="font-semibold text-gray-900 dark:text-white">Visit Us</h3>
                       <p className="text-gray-600 dark:text-gray-300">Bangalore, India</p>
                     </div>
+                  </div>
+                  */}
+                  
+                  <div className="text-center text-gray-600 dark:text-gray-300">
+                    <p className="text-lg">We'll get back to you within 24 hours!</p>
                   </div>
                 </div>
               </GlassContainer>
