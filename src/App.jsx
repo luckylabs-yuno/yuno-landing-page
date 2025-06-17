@@ -917,7 +917,7 @@ const PilotProgramSection = () => {
                         Website URL *
                       </label>
                       <input
-                        type="url"
+                        type="text"
                         name="website_url"
                         value={formData.website_url}
                         onChange={handleInputChange}
