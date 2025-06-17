@@ -347,7 +347,7 @@ const Header = () => {
         {/* Logo - Make smaller on mobile */}
         <Link to="/" className="flex items-center gap-2 sm:gap-3">
           <img 
-            src="/logo.svg" 
+            src="/HelloYuno.png" 
             alt="Yuno Logo" 
             className="w-8 h-8 sm:w-12 sm:h-12 object-contain"
           />
