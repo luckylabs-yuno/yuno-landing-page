@@ -19,11 +19,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Validate URL format
-    try {
-      new URL(website_url);
-    } catch {
-      return res.status(400).json({ error: 'Invalid website URL' });
+    // Clean and normalize URL - UPDATED LOGIC
+    let cleanUrl = website_url.trim();
+    
+    // Remove protocol if present
+    cleanUrl = cleanUrl.replace(/^https?:\/\//, '');
+    
+    // Remove trailing slash
+    cleanUrl = cleanUrl.replace(/\/$/, '');
+    
+    // Basic domain validation (optional - more flexible)
+    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.([a-zA-Z]{2,}|[a-zA-Z]{2,}\.[a-zA-Z]{2,})$/;
+    if (!domainRegex.test(cleanUrl)) {
+      return res.status(400).json({ error: 'Please enter a valid website URL (e.g., yoursite.com or www.yoursite.com)' });
     }
 
     // Check if email already exists
@@ -34,14 +42,14 @@ export default async function handler(req, res) {
       .single();
 
     if (existing) {
-      return res.status(400).json({ error: 'Email already registered for pilot program' });
+      return res.status(400).json({ error: 'Email already registered for beta program' });
     }
 
-    // Insert to Supabase
+    // Insert to Supabase - store clean URL
     const { data, error } = await supabase
       .from('yuno_leads')
       .insert([{
-        website_url: website_url.trim(),
+        website_url: cleanUrl, // Store without protocol
         email: email.trim().toLowerCase(),
         first_name: first_name.trim(),
         business_type: business_type || null,
@@ -60,7 +68,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Pilot request submitted successfully',
+      message: 'Beta application submitted successfully',
       id: data[0].id 
     });
 
