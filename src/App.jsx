@@ -248,6 +248,8 @@ const TypingAnimation = ({ text, speed = 80, className = "" }) => {
 
 // Yuno Chat Demo Component
 const YunoChatDemo = () => {
+  const { isDark } = useTheme();
+
   useEffect(() => {
     // Function to show Yuno demo
     const showYunoDemo = () => {
@@ -303,6 +305,18 @@ const YunoChatDemo = () => {
     };
   }, []);
 
+  // Update theme when it changes
+  useEffect(() => {
+    const yunoWidget = document.querySelector('yuno-chat');
+    if (yunoWidget && yunoWidget.updateTheme) {
+      // If your widget has an updateTheme method
+      yunoWidget.updateTheme(isDark ? 'dark' : 'light');
+    } else if (yunoWidget) {
+      // Or update via attribute
+      yunoWidget.setAttribute('theme', isDark ? 'dark' : 'light');
+    }
+  }, [isDark]);
+
   return null;
 };
 
@@ -331,9 +345,11 @@ const Header = () => {
     `}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
-            <MessageCircle className="w-6 h-6 text-white" />
-          </div>
+          <img 
+            src="/HelloYuno.png" 
+            alt="Yuno Logo" 
+            className="w-14 h-14 object-contain"
+          />
           <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
             Yuno
           </span>
@@ -343,7 +359,19 @@ const Header = () => {
           <a href="#features" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Features</a>
           <a href="#how-it-works" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">How it Works</a>
           <button onClick={() => window.showYunoDemo?.()} className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Demo</button>
-          <a href="#pricing" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Pricing</a>
+          <a 
+            href="#pilot-program" 
+            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('pilot-program')?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }}
+          >
+            Join Beta
+          </a>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -353,8 +381,16 @@ const Header = () => {
           >
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-          <AnimatedButton variant="secondary">
-            Start Free Trial
+          <AnimatedButton 
+            variant="secondary"
+            onClick={() => {
+              document.getElementById('pilot-program')?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }}
+          >
+            Join Beta Program
           </AnimatedButton>
         </div>
       </div>
@@ -370,7 +406,7 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
       <NeuralNetwork />
       
-      <div ref={ref} className="container mx-auto py-10 relative z-10">
+      <div ref={ref} className="container mx-auto pt-32 pb-20 relative z-10">
         <div className={`text-center max-w-5xl mx-auto transition-all duration-1000 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="mx-auto py-10">
             <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-100/80 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-sm font-medium backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50">
@@ -397,8 +433,16 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-            <AnimatedButton className="text-xl px-12 py-2">
-              Start Free Trial
+            <AnimatedButton 
+              className="text-xl px-12 py-2"
+              onClick={() => {
+                document.getElementById('pilot-program')?.scrollIntoView({ 
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }}
+            >
+              Join Beta Program
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </AnimatedButton>
             <AnimatedButton variant="secondary" className="text-xl px-12 py-2" onClick={() => window.showYunoDemo?.()}>
@@ -406,19 +450,19 @@ const HeroSection = () => {
               Watch Demo
             </AnimatedButton>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-2">
               <Check className="w-5 h-5 text-green-500" />
-              <span className="font-medium">7-day free trial</span>
+              <span className="font-medium">Free beta access</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-5 h-5 text-green-500" />
-              <span className="font-medium">No credit card required</span>
+              <span className="font-medium">Personal setup included</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-5 h-5 text-green-500" />
-              <span className="font-medium">2-minute setup</span>
+              <span className="font-medium">Limited spots available</span>
             </div>
           </div>
         </div>
@@ -582,31 +626,35 @@ const FAQSection = () => {
   const [ref, inView] = useInView();
   
   const faqs = [
-    {
-      question: "How quickly can I get Yuno running on my website?",
-      answer: "Incredibly fast! Once you sign up and add your website URL, we automatically scrape your content and train the AI. Then you just copy-paste one line of code. The entire process takes about 2 minutes."
-    },
-    {
-      question: "What if my website is in a language other than English?",
-      answer: "Multilingual support is coming soon! We're working hard to bring you support for 50+ languages. Currently, Yuno works best with English content."
-    },
-    {
-      question: "How does Yuno know about my products and services?",
-      answer: "Yuno automatically reads and learns from your website content, including product pages, FAQs, about pages, and any documents you upload. It becomes an expert on your business within minutes."
-    },
-    {
-      question: "Can I customize how Yuno responds?",
-      answer: "Yes! You can set your brand tone, add custom responses, upload additional documents, and even provide fallback contact information for complex queries."
-    },
-    {
-      question: "What happens to the leads Yuno captures?",
-      answer: "All leads are instantly available in your dashboard with full conversation context. You can also set up email notifications for immediate follow-up."
-    },
-    {
-      question: "Is there a limit on website traffic or conversations?",
-      answer: "Your plan includes 5,000 conversations per month, which covers most small to medium websites. If you need more, we offer volume add-ons or can discuss enterprise pricing."
-    }
-  ];
+      {
+        question: "What is the Yuno Beta Program?",
+        answer: "Our Beta Program offers free access to Yuno with personal setup and support while we perfect our platform. You get professional chatbot installation worth ₹25,000 at no cost, and we get valuable feedback to improve our product."
+      },
+      {
+        question: "How do I get started with the Beta Program?",
+        answer: "Simply fill out our beta application form with your website URL and contact details. We'll review your application and reach out within 48 hours to schedule your personal onboarding call and setup."
+      },
+      {
+        question: "What's included in the beta access?",
+        answer: "Beta members get: personal onboarding call, custom AI training on your content, white-glove installation, priority support, and direct input into Yuno's development roadmap. Everything is included at no cost during the beta period."
+      },
+      {
+        question: "How long does the beta program last?",
+        answer: "The beta program runs while we're perfecting our self-service platform. Beta members will have early access to new features and preferential pricing when we launch our public plans."
+      },
+      {
+        question: "Do I need technical knowledge to participate in the beta?",
+        answer: "Not at all! That's the beauty of our beta program - we handle everything for you. Our team personally installs and configures Yuno on your website. You just need to provide access to add one line of code."
+      },
+      {
+        question: "How quickly will my chatbot be ready?",
+        answer: "Once accepted into the beta, we'll schedule a setup call within 48 hours. After our brief consultation, your custom-trained chatbot will be live on your website within 24-48 hours."
+      },
+      {
+        question: "What if I'm not happy with the setup?",
+        answer: "We're committed to your success! During the beta, we'll work with you to refine and perfect your chatbot until it meets your expectations. Your feedback helps us improve the product for everyone."
+      }
+    ];
 
   return (
     <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
@@ -653,6 +701,334 @@ const FAQSection = () => {
           ))}
         </div>
       </div>
+    </section>
+  );
+};
+
+const PilotProgramSection = () => {
+  const [formData, setFormData] = useState({
+    website_url: '',
+    email: '',
+    first_name: '',
+    business_type: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  // Remove spots left counter and related states
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Subtle entrance animation
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/pilot-leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        setSubmitted(true);
+      } else {
+        alert(result.error || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Pilot signup error:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  if (submitted) {
+    return (
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 relative overflow-hidden">
+        <div className="container mx-auto px-6 text-center">
+          <div className="max-w-2xl mx-auto">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+              <Check className="w-10 h-10 text-white relative z-10" />
+            </div>
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              Welcome to Beta! 🎉
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+              We'll analyze your website and reach out within 24 hours with your custom Yuno setup.
+            </p>
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-700">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-6 text-xl">What happens next?</h3>
+              <div className="grid md:grid-cols-3 gap-6 text-center">
+                {[
+                  { step: "1", icon: <Zap className="w-6 h-6" />, title: "Analysis", desc: "We analyze your website content" },
+                  { step: "2", icon: <Shield className="w-6 h-6" />, title: "Setup", desc: "Custom Yuno configuration" },
+                  { step: "3", icon: <TrendingUp className="w-6 h-6" />, title: "Launch", desc: "Code delivered via email" }
+                ].map((item, index) => (
+                  <div key={index} className={`transition-all duration-500 delay-${index * 200} ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center mx-auto mb-3 text-white relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-out" />
+                      <span className="relative z-10">{item.icon}</span>
+                    </div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{item.title}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="pilot-program" className="py-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 relative overflow-hidden">
+      {/* Subtle animated background elements */}
+      <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-blue-400/10 to-cyan-300/10 rounded-full animate-pulse blur-xl" />
+      <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-purple-400/10 to-pink-300/10 rounded-full animate-pulse delay-1000 blur-xl" />
+      
+      <div className="container mx-auto px-6">
+        <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          {/* Beta Badge with Subtle Animation */}
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6 border border-blue-200 dark:border-blue-700/50 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+            <Sparkles className="w-4 h-4" />
+            Exclusive Beta Program
+            <Sparkles className="w-4 h-4" />
+          </div>
+          
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white">
+            Join Our Exclusive
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"> Beta Program</span>
+          </h2>
+          
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+            Get free access to Yuno with personal setup and training while we perfect our platform.
+            <br />
+            <span className="font-semibold text-gray-800 dark:text-gray-200">Help shape the future of AI chatbots!</span>
+          </p>
+        </div>
+        
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Benefits Section */}
+            <div className={`transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+              <div className="mb-8">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 text-emerald-700 dark:text-emerald-300 text-sm font-medium mb-4 relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+                  <Star className="w-4 h-4" />
+                  <span className="relative z-10">₹25,000 Value - Beta Access</span>
+                </div>
+                <h3 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                  What Beta Members Get
+                </h3>
+              </div>
+              
+              <div className="space-y-6">
+                {[
+                  {
+                    icon: <Users className="w-6 h-6" />,
+                    title: "Personal Onboarding Call",
+                    description: "15-minute 1:1 consultation to understand your business and customize Yuno perfectly",
+                    color: "from-blue-500 to-cyan-400"
+                  },
+                  {
+                    icon: <Shield className="w-6 h-6" />,
+                    title: "Custom AI Training", 
+                    description: "We manually train Yuno on your specific content, FAQs, and business processes",
+                    color: "from-green-500 to-emerald-400"
+                  },
+                  {
+                    icon: <Zap className="w-6 h-6" />,
+                    title: "White-Glove Setup",
+                    description: "Professional installation with guaranteed perfect configuration - no technical skills needed",
+                    color: "from-purple-500 to-pink-400"
+                  },
+                  {
+                    icon: <TrendingUp className="w-6 h-6" />,
+                    title: "Priority Support & Feedback",
+                    description: "Direct access to our team + your input helps shape Yuno's development roadmap",
+                    color: "from-orange-500 to-red-400"
+                  }
+                ].map((benefit, index) => (
+                  <div key={index} className={`flex items-start gap-4 transition-all duration-500 delay-${index * 100 + 500} ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+                    <div className={`w-12 h-12 bg-gradient-to-br ${benefit.color} rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg relative overflow-hidden group`}>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-out" />
+                      <span className="relative z-10">{benefit.icon}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 dark:text-white mb-2">{benefit.title}</h4>
+                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{benefit.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl border border-blue-200 dark:border-blue-700 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/30 dark:via-blue-800/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <span className="font-semibold text-blue-800 dark:text-blue-200">Beta Program Details</span>
+                  </div>
+                  <p className="text-blue-700 dark:text-blue-300 text-sm leading-relaxed">
+                    We're perfecting our platform and need partners to help us build the best AI chatbot experience. 
+                    You get professional setup and priority support, we get valuable feedback to improve Yuno.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Form Section */}
+            <div className={`transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-white/30 dark:border-gray-600/30 rounded-3xl shadow-2xl p-8 relative overflow-hidden">
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 dark:from-blue-400/10 dark:to-cyan-400/10 animate-pulse" />
+                
+                <div className="relative z-10">
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                      Apply for Beta Access
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Professional setup within 48 hours
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Website URL *
+                      </label>
+                      <input
+                        type="url"
+                        name="website_url"
+                        value={formData.website_url}
+                        onChange={handleInputChange}
+                        placeholder="https://yourwebsite.com"
+                        className="w-full px-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-600"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Business Email *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="john@company.com"
+                        className="w-full px-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-600"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        First Name *
+                      </label>
+                      <input
+                        type="text"
+                        name="first_name"
+                        value={formData.first_name}
+                        onChange={handleInputChange}
+                        placeholder="John"
+                        className="w-full px-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-600"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Business Type
+                      </label>
+                      <select
+                        name="business_type"
+                        value={formData.business_type}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-600"
+                      >
+                        <option value="">Select your business type</option>
+                        <option value="ecommerce">E-commerce</option>
+                        <option value="saas">SaaS/Software</option>
+                        <option value="services">Professional Services</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="legal">Legal</option>
+                        <option value="real-estate">Real Estate</option>
+                        <option value="education">Education</option>
+                        <option value="restaurant">Restaurant/Food</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    
+                    <button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !formData.website_url || !formData.email || !formData.first_name}
+                      className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-out" />
+                      <span className="relative z-10 flex items-center gap-2">
+                        {isSubmitting ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Submitting Application...
+                          </>
+                        ) : (
+                          <>
+                            Apply for Beta Access
+                            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                          </>
+                        )}
+                      </span>
+                    </button>
+                    
+                    <div className="text-center space-y-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Beta access • Professional setup included • Partnership opportunity
+                      </p>
+                      <div className="flex items-center justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+                        <span>✓ No payment required</span>
+                        <span>✓ Setup within 48h</span>
+                        <span>✓ Priority support</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Add custom animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.6s ease-out forwards;
+        }
+      `}</style>
     </section>
   );
 };
@@ -786,9 +1162,11 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
-                <MessageCircle className="w-7 h-7 text-white" />
-              </div>
+                <img 
+                  src="/HelloYuno.png" 
+                  alt="Yuno Logo" 
+                  className="w-14 h-14 object-contain"
+                />
               <span className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
                 Yuno
               </span>
@@ -798,8 +1176,17 @@ const Footer = () => {
               The easiest way to add intelligent chat to any website.
             </p>
             <div className="flex gap-4">
-              <AnimatedButton variant="primary" className="px-6 py-3">
-                Start Free Trial
+              <AnimatedButton 
+                variant="primary" 
+                className="px-6 py-3"
+                onClick={() => {
+                  document.getElementById('pilot-program')?.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }}
+              >
+                Join Beta Program
               </AnimatedButton>
             </div>
           </div>
@@ -809,7 +1196,7 @@ const Footer = () => {
             <h4 className="text-white font-bold mb-4">Product</h4>
             <div className="space-y-3">
               <a href="#features" className="block text-gray-400 hover:text-white transition-colors">Features</a>
-              <a href="#pricing" className="block text-gray-400 hover:text-white transition-colors">Pricing</a>
+              <a href="#PilotProgramSection" className="block text-gray-400 hover:text-white transition-colors">Join Beta</a>
               <button onClick={() => window.showYunoDemo?.()} className="block text-gray-400 hover:text-white transition-colors text-left">Demo</button>
               <Link to="/help" className="block text-gray-400 hover:text-white transition-colors">Help Center</Link>
             </div>
@@ -1130,76 +1517,109 @@ const HelpPage = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const faqCategories = [
-    {
-      title: "Getting Started",
-      faqs: [
-        {
-          question: "How do I add Yuno to my website?",
-          answer: "Adding Yuno is simple! Just sign up for an account, add your website URL, and we'll provide you with a single line of code to paste into your website. The entire process takes about 2 minutes."
-        },
-        {
-          question: "Do I need technical knowledge to set up Yuno?",
-          answer: "Not at all! Yuno is designed for non-technical users. You just need to copy and paste one line of code into your website's HTML. If you can add Google Analytics, you can add Yuno."
-        },
-        {
-          question: "How quickly will my chatbot be ready?",
-          answer: "Your chatbot will be ready within minutes of adding your website URL. Our AI automatically scans and learns from your website content to provide relevant responses immediately."
-        }
-      ]
-    },
-    {
-      title: "Features & Functionality",
-      faqs: [
-        {
-          question: "What types of questions can Yuno answer?",
-          answer: "Yuno can answer questions about your products, services, pricing, company information, and any other content available on your website. It learns from your website content to provide accurate, contextual responses."
-        },
-        {
-          question: "Can I customize Yuno's responses?",
-          answer: "Yes! You can customize Yuno's tone, add specific responses to common questions, upload additional documents for training, and set fallback responses for complex queries."
-        },
-        {
-          question: "Does Yuno work on mobile devices?",
-          answer: "Absolutely! Yuno is fully responsive and works seamlessly on all devices - desktop, tablet, and mobile. The chat widget automatically adapts to different screen sizes."
-        }
-      ]
-    },
-    {
-      title: "Billing & Plans",
-      faqs: [
-        {
-          question: "How does the free trial work?",
-          answer: "You get 7 days completely free with full access to all features. No credit card required to start. You can cancel anytime during the trial period without any charges."
-        },
-        {
-          question: "What happens if I exceed my conversation limit?",
-          answer: "If you approach your conversation limit, we'll notify you in advance. You can upgrade your plan or purchase additional conversation packs. Your chatbot will continue working even if you exceed the limit."
-        },
-        {
-          question: "Can I change or cancel my plan anytime?",
-          answer: "Yes, you can upgrade, downgrade, or cancel your plan anytime. Changes take effect immediately, and we'll pro-rate any billing adjustments."
-        }
-      ]
-    },
-    {
-      title: "Technical Support",
-      faqs: [
-        {
-          question: "What if Yuno isn't working on my website?",
-          answer: "First, check that the code is properly installed. If you're still having issues, contact our support team with your website URL and we'll help troubleshoot the problem quickly."
-        },
-        {
-          question: "Can I integrate Yuno with my existing tools?",
-          answer: "We're working on integrations with popular CRM and marketing tools. Currently, you can export conversation data and leads to use with your existing systems."
-        },
-        {
-          question: "How do I update my website content in Yuno?",
-          answer: "Yuno automatically re-scans your website periodically to stay up-to-date. You can also manually trigger a re-scan from your dashboard whenever you update your website content."
-        }
-      ]
-    }
-  ];
+const faqCategories = [
+  {
+    title: "Beta Program",
+    faqs: [
+      {
+        question: "What is the Yuno Beta Program?",
+        answer: "Our Beta Program offers free access to Yuno with personal setup and support while we perfect our platform. You get professional chatbot installation worth ₹25,000 at no cost, and we get valuable feedback to improve our product."
+      },
+      {
+        question: "How do I get started with the Beta Program?",
+        answer: "Simply fill out our beta application form with your website URL and contact details. We'll review your application and reach out within 48 hours to schedule your personal onboarding call and setup."
+      },
+      {
+        question: "What's included in the beta access?",
+        answer: "Beta members get: personal onboarding call, custom AI training on your content, white-glove installation, priority support, and direct input into Yuno's development roadmap. Everything is included at no cost during the beta period."
+      },
+      {
+        question: "How long does the beta program last?",
+        answer: "The beta program runs while we're perfecting our self-service platform. Beta members will have early access to new features and preferential pricing when we launch our public plans."
+      }
+    ]
+  },
+  {
+    title: "Getting Started",
+    faqs: [
+      {
+        question: "Do I need technical knowledge to participate in the beta?",
+        answer: "Not at all! That's the beauty of our beta program - we handle everything for you. Our team personally installs and configures Yuno on your website. You just need to provide access to add one line of code."
+      },
+      {
+        question: "How quickly will my chatbot be ready?",
+        answer: "Once accepted into the beta, we'll schedule a setup call within 48 hours. After our brief consultation, your custom-trained chatbot will be live on your website within 24-48 hours."
+      },
+      {
+        question: "What if I'm not happy with the setup?",
+        answer: "We're committed to your success! During the beta, we'll work with you to refine and perfect your chatbot until it meets your expectations. Your feedback helps us improve the product for everyone."
+      }
+    ]
+  },
+  {
+    title: "Features & Functionality",
+    faqs: [
+      {
+        question: "What types of questions can Yuno answer?",
+        answer: "Yuno can answer questions about your products, services, pricing, company information, and any content from your website. During the beta setup, we'll also train it on your specific FAQs and business processes."
+      },
+      {
+        question: "Can I customize how Yuno responds?",
+        answer: "Absolutely! During your personal onboarding call, we'll configure Yuno's tone to match your brand, add specific responses for your common questions, and set up appropriate fallback responses for complex queries."
+      },
+      {
+        question: "Does Yuno work on mobile devices?",
+        answer: "Yes! Yuno is fully responsive and works perfectly on desktop, tablet, and mobile devices. The chat widget automatically adapts to different screen sizes for optimal user experience."
+      },
+      {
+        question: "What languages does Yuno support?",
+        answer: "Currently, Yuno works best with English content. Multilingual support is in development and will be one of the first features we test with our beta community."
+      }
+    ]
+  },
+  {
+    title: "Beta Support & Feedback",
+    faqs: [
+      {
+        question: "What kind of support do beta members get?",
+        answer: "Beta members receive priority support with direct access to our development team. You can reach us via email, and we typically respond within 12 hours. We also schedule regular check-ins to gather feedback."
+      },
+      {
+        question: "How can I provide feedback during the beta?",
+        answer: "We value your input! You can share feedback through regular check-in calls, email, or our dedicated beta feedback channel. Your suggestions directly influence Yuno's development roadmap."
+      },
+      {
+        question: "What happens when the beta ends?",
+        answer: "Beta participants will get early access to our paid plans with special pricing. We'll provide advance notice before any transition and ensure continuity of service for your chatbot."
+      },
+      {
+        question: "Can I make changes to my chatbot during the beta?",
+        answer: "Yes! During the beta, we can update your chatbot's training, modify responses, or adjust its behavior based on your needs. Just contact our support team, and we'll implement changes quickly."
+      }
+    ]
+  },
+  {
+    title: "Technical Information",
+    faqs: [
+      {
+        question: "How does Yuno learn about my business?",
+        answer: "Our team personally analyzes your website content, including product pages, service descriptions, FAQs, and any additional documents you provide. We then manually train Yuno to understand your business and respond accurately."
+      },
+      {
+        question: "What if Yuno doesn't know how to answer a question?",
+        answer: "We configure smart fallback responses during setup. Yuno can collect visitor contact information, offer to connect them with your team, or provide your contact details for complex queries it can't handle."
+      },
+      {
+        question: "How do I update my website content in Yuno?",
+        answer: "During the beta, simply contact our support team when you update your website content. We'll manually update Yuno's training to reflect your changes. In the future, this will be automated."
+      },
+      {
+        question: "Is my data secure with Yuno?",
+        answer: "Absolutely. We follow industry-standard security practices to protect your data and your visitors' information. All conversations are encrypted, and we never share your data with third parties."
+      }
+    ]
+  }
+];
 
   const filteredCategories = faqCategories.map(category => ({
     ...category,
@@ -1526,7 +1946,7 @@ const HomePage = () => {
       <HowItWorksSection />
       <FeaturesSection />
       <FAQSection />
-      <PricingSection />
+      <PilotProgramSection />
     </>
   );
 };
