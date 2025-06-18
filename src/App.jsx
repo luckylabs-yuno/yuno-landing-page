@@ -487,75 +487,6 @@ const HeroSection = () => {
   );
 };
 
-// How It Works Section
-const HowItWorksSection = () => {
-  const [ref, inView] = useInView();
-  
-  const steps = [
-    {
-      number: "01",
-      title: "Add Your Website",
-      description: "Simply enter your website URL and we'll automatically scrape and analyze your content.",
-      icon: <Globe className="w-8 h-8" />
-    },
-    {
-      number: "02", 
-      title: "AI Training",
-      description: "Our AI learns from your website content, FAQs, and documents to provide accurate responses.",
-      icon: <Zap className="w-8 h-8" />
-    },
-    {
-      number: "03",
-      title: "One-Line Setup", 
-      description: "Copy and paste one line of code to your website. Your smart chatbot is now live!",
-      icon: <Rocket className="w-8 h-8" />
-    }
-  ];
-
-  return (
-    <section id="how-it-works" className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
-      <div className="container mx-auto px-6">
-        <div ref={ref} className={`text-center mb-16 transition-all duration-1000 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white">
-            How It
-            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"> Works</span>
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Get your AI chatbot up and running in minutes, not hours
-          </p>
-        </div>
-        
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Connection Lines */}
-            <div className="hidden md:block absolute top-24 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-300 dark:from-blue-600 dark:via-cyan-500 dark:to-blue-600" />
-            
-            {steps.map((step, index) => (
-              <div key={index} className={`text-center transition-all duration-700 delay-${index * 200} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <GlassContainer className="p-8 relative">
-                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                      {step.number}
-                    </div>
-                  </div>
-                  
-                  <div className="mt-6 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto text-white shadow-lg">
-                      {step.icon}
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">{step.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{step.description}</p>
-                </GlassContainer>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 // Enhanced Features Section (Updated)
 const FeaturesSection = () => {
@@ -625,6 +556,77 @@ const FeaturesSection = () => {
               </GlassContainer>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
+// How It Works Section
+const HowItWorksSection = () => {
+  const [ref, inView] = useInView();
+  
+  const steps = [
+    {
+      number: "01",
+      title: "Add Your Website",
+      description: "Simply enter your website URL and we'll automatically scrape and analyze your content.",
+      icon: <Globe className="w-8 h-8" />
+    },
+    {
+      number: "02", 
+      title: "AI Training",
+      description: "Our AI learns from your website content, FAQs, and documents to provide accurate responses.",
+      icon: <Zap className="w-8 h-8" />
+    },
+    {
+      number: "03",
+      title: "One-Line Setup", 
+      description: "Copy and paste one line of code to your website. Your smart chatbot is now live!",
+      icon: <Rocket className="w-8 h-8" />
+    }
+  ];
+
+  return (
+    <section id="how-it-works" className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
+      <div className="container mx-auto px-6">
+        <div ref={ref} className={`text-center mb-16 transition-all duration-1000 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white">
+            How It
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"> Works</span>
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Get your AI chatbot up and running in minutes, not hours
+          </p>
+        </div>
+        
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {/* Connection Lines */}
+            <div className="hidden md:block absolute top-24 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-300 dark:from-blue-600 dark:via-cyan-500 dark:to-blue-600" />
+            
+            {steps.map((step, index) => (
+              <div key={index} className={`text-center transition-all duration-700 delay-${index * 200} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                <GlassContainer className="p-8 relative">
+                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                      {step.number}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto text-white shadow-lg">
+                      {step.icon}
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">{step.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{step.description}</p>
+                </GlassContainer>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -1955,10 +1957,10 @@ const HomePage = () => {
     <>
       <YunoChatDemo />
       <HeroSection />
-      <HowItWorksSection />
       <FeaturesSection />
-      <FAQSection />
       <PilotProgramSection />
+      <HowItWorksSection />
+      <FAQSection />
     </>
   );
 };
