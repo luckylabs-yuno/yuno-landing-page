@@ -1,0 +1,27 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/yuno-5.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "app/api/contact.js": {
+      "runtime": "nodejs18.x"
+    },
+    "app/api/pilot-leads.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}

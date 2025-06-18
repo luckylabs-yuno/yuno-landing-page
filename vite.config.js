@@ -7,6 +7,8 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    // Add this for React Router
+    historyApiFallback: true,
   },
   build: {
     outDir: 'dist',

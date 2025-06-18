@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Settings, Code, Monitor, ArrowLeft, Copy, Check, RotateCcw, Play, X, Send, Moon, Sun } from 'lucide-react';
+import { Palette, Settings, Code, Monitor, ArrowLeft, Copy, Check, RotateCcw, Play, X, Send, Moon, Sun, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const GlassContainer = ({ children, className = "", hover = true }) => {
@@ -18,7 +18,77 @@ const GlassContainer = ({ children, className = "", hover = true }) => {
   );
 };
 
+// Mobile Detection Hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+      const screenWidth = window.innerWidth;
+      
+      setIsMobile(mobileRegex.test(userAgent) || screenWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+};
+
+// Mobile Fallback Component
+const MobileFallback = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 flex items-center justify-center p-6">
+      <GlassContainer className="max-w-md mx-auto text-center p-8">
+        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <Smartphone className="w-10 h-10 text-white" />
+        </div>
+        
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Desktop Experience Required
+        </h1>
+        
+        <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+          The Yuno Widget Customizer is designed for desktop use to provide the best interactive experience. Please visit this page on a laptop or desktop computer.
+        </p>
+        
+        <div className="space-y-4">
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300"
+          >
+            Back to Home
+          </Link>
+          
+          <Link
+            to="/help"
+            className="inline-flex items-center justify-center w-full px-6 py-3 bg-white/20 dark:bg-gray-700/30 backdrop-blur-md border border-white/30 dark:border-gray-600/30 text-gray-800 dark:text-white hover:bg-white/30 dark:hover:bg-gray-600/40 font-semibold rounded-xl transition-all duration-300"
+          >
+            View Help Center
+          </Link>
+        </div>
+        
+        <div className="mt-6 text-xs text-gray-500 dark:text-gray-400">
+          💡 You can still access all Yuno features on mobile devices once installed on your website
+        </div>
+      </GlassContainer>
+    </div>
+  );
+};
+
 const YunoCustomizerPage = () => {
+  const isMobile = useIsMobile();
+
+  // Show mobile fallback if on mobile device
+  if (isMobile) {
+    return <MobileFallback />;
+  }
+
   // Configuration state
   const [config, setConfig] = useState({
     site_id: 'your_site_123',
@@ -30,9 +100,9 @@ const YunoCustomizerPage = () => {
     background_color: '',
     text_color: '',
     welcome_message: "Hi! I'm Yuno—how can I help you today?",
-    teaser_message: "Let me know if you need help",
+    teaser_message: "Questions about our platform? Try Yuno Now",
     trigger_text: "Ask Yuno",
-    trigger_icon: "💬",
+    trigger_icon: "🔥",
     header_title: "Chat with Yuno",
     placeholder: "Type your message…",
     auto_show: true,
@@ -153,7 +223,7 @@ const YunoCustomizerPage = () => {
   ];
 
   // Available icons
-  const availableIcons = ['💬', '🤖', '💡', '🛒', '🏥', '📚', '🔧', '❓', '💎', '🎮', '🏠', '✨', '🍜', '🌶️', '☕', '🎯', '🚀', '⭐', '🍕', '✈️', '💻', '🩺'];
+  const availableIcons = ['💬', '🤖', '💡', '🛒', '🏥', '📚', '🔧', '❓', '💎', '🎮', '🏠', '✨', '🍜', '🌶️', '☕', '🎯', '🚀', '⭐', '🍕', '✈️', '💻', '🩺', '🔥'];
 
   // Update config function
   const updateConfig = (key, value) => {
@@ -526,18 +596,6 @@ const YunoCustomizerPage = () => {
                         </label>
                         <input
                           type="color"
-                          value={config.background_color}
-                          onChange={(e) => updateConfig('background_color', e.target.value)}
-                          className="w-full h-12 rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Override theme background</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Text Color (optional)
-                        </label>
-                        <input
-                          type="color"
                           value={config.text_color}
                           onChange={(e) => updateConfig('text_color', e.target.value)}
                           className="w-full h-12 rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer"
@@ -763,7 +821,6 @@ const YunoCustomizerPage = () => {
                   </p>
               </div>
 
-
               {/* Demo Status */}
               <div className="mt-6 space-y-3">
                 <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
@@ -881,47 +938,133 @@ const YunoCustomizerPage = () => {
         </div>
       </div>
       
-      {/* --- FLOATING INTERACTIVE WIDGET DEMO --- */}
+      {/* --- FLOATING INTERACTIVE WIDGET DEMO (Exact Match to Real Widget) --- */}
       <div className={`fixed ${getPositionClasses()} z-50`}>
-        {/* Bubble State */}
+        {/* Bubble State - Exact match to real widget */}
         {demoState === 'bubble' && (
           <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-white font-semibold shadow-lg cursor-pointer transform hover:scale-105 transition-all animate-pulse"
+            className="inline-flex items-center cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-1"
             style={{
-              background: colors.bubble,
-              borderRadius: config.border_radius
+              background: config.accent_color ? 
+                `linear-gradient(to right, ${config.primary_color}, ${config.accent_color})` : 
+                config.primary_color,
+              color: '#ffffff',
+              padding: '0 18px',
+              height: '44px',
+              borderRadius: '22px',
+              boxShadow: '0 6px 20px rgba(255, 107, 53, 0.3)',
+              fontSize: '14px',
+              fontWeight: '600',
+              gap: '10px',
+              border: '2px solid rgba(255, 255, 255, 0.1)'
             }}
             onClick={openChat}
+            onMouseEnter={(e) => {
+              e.target.style.boxShadow = '0 8px 25px rgba(255, 107, 53, 0.4)';
+              e.target.style.background = config.accent_color ? 
+                `linear-gradient(to right, ${config.accent_color}, ${config.primary_color})` : 
+                config.primary_color;
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.boxShadow = '0 6px 20px rgba(255, 107, 53, 0.3)';
+              e.target.style.background = config.accent_color ? 
+                `linear-gradient(to right, ${config.primary_color}, ${config.accent_color})` : 
+                config.primary_color;
+            }}
           >
-            <span className="text-lg">{config.trigger_icon}</span>
-            <span className="text-sm">{config.trigger_text}</span>
+            <span style={{ 
+              fontSize: '20px', 
+              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' 
+            }}>
+              {config.trigger_icon}
+            </span>
+            <span style={{ 
+              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' 
+            }}>
+              {config.trigger_text}
+            </span>
           </div>
         )}
 
-        {/* Teaser State */}
+        {/* Teaser State - Exact match to real widget */}
         {demoState === 'teaser' && config.show_teaser && (
           <div className="flex flex-col gap-2 items-end">
             <div
-              className="flex items-center gap-2 p-2 rounded-xl shadow-lg max-w-[200px]"
+              className="flex items-center gap-2"
               style={{
-                background: colors.panel,
-                color: colors.text,
+                background: config.theme === 'dark' ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: config.blur_effect ? 'blur(30px)' : 'none',
                 borderRadius: config.border_radius,
-                backdropFilter: config.blur_effect ? 'blur(20px)' : 'none',
-                animation: 'slideIn 0.3s ease-out'
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                padding: '4px',
+                border: `1px solid ${config.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+                animation: 'slideInUp 0.5s ease-out'
               }}
             >
               <button
                 onClick={() => setDemoState('bubble')}
-                className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs hover:bg-gray-400 transition-colors"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  background: config.theme === 'dark' ? 'rgba(40, 40, 40, 0.8)' : 'rgba(240, 240, 240, 0.8)',
+                  color: config.theme === 'dark' ? '#a0a0a0' : '#666666',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  border: 'none',
+                  transition: 'background 0.2s ease, color 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = config.theme === 'dark' ? 'rgba(60, 60, 60, 0.9)' : 'rgba(220, 220, 220, 0.9)';
+                  e.target.style.color = config.theme === 'dark' ? '#ffffff' : '#1a1a1a';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = config.theme === 'dark' ? 'rgba(40, 40, 40, 0.8)' : 'rgba(240, 240, 240, 0.8)';
+                  e.target.style.color = config.theme === 'dark' ? '#a0a0a0' : '#666666';
+                }}
               >
                 ×
               </button>
-              <div className="flex-1 text-xs px-2 py-1">{config.teaser_message}</div>
+              <div
+                style={{
+                  flex: '1',
+                  background: config.theme === 'dark' ? 'rgba(20, 20, 20, 0.95)' : 'rgba(248, 248, 248, 0.98)',
+                  borderRadius: config.border_radius,
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  color: config.theme === 'dark' ? '#ffffff' : '#1a1a1a'
+                }}
+              >
+                {config.teaser_message}
+              </div>
               <button
                 onClick={openChat}
-                className="px-3 py-1 text-xs rounded-lg text-white font-medium"
-                style={{ background: config.primary_color }}
+                style={{
+                  background: config.accent_color ? 
+                    `linear-gradient(to right, ${config.primary_color}, ${config.accent_color})` : 
+                    config.primary_color,
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: config.border_radius,
+                  padding: '8px 14px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'background 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = config.accent_color ? 
+                    `linear-gradient(to right, ${config.accent_color}, ${config.primary_color})` : 
+                    config.primary_color;
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = config.accent_color ? 
+                    `linear-gradient(to right, ${config.primary_color}, ${config.accent_color})` : 
+                    config.primary_color;
+                }}
               >
                 {config.trigger_text}
               </button>
@@ -929,102 +1072,227 @@ const YunoCustomizerPage = () => {
           </div>
         )}
 
-        {/* Chat State */}
+        {/* Chat State - Exact match to real widget */}
         {demoState === 'chat' && (
           <div
-            className="flex flex-col shadow-2xl"
+            className="flex flex-col overflow-hidden"
             style={{
-              background: colors.panel,
+              background: config.theme === 'dark' ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: config.blur_effect ? 'blur(30px)' : 'none',
               borderRadius: config.border_radius,
               width: config.width,
-              height: config.height,
-              backdropFilter: config.blur_effect ? 'blur(20px)' : 'none',
-              animation: `${config.animation}In 0.3s ease-out`
+              maxHeight: config.height,
+              boxShadow: '0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px ' + (config.theme === 'dark' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(0, 0, 0, 0.1)'),
+              animation: 'slideIn 0.5s ease-out'
             }}
           >
-            {/* Chat Header */}
+            {/* Chat Header - Exact match */}
             <div
-              className="flex items-center justify-between p-3 border-b"
-              style={{ 
-                borderColor: colors.border,
-                color: colors.text
+              className="flex items-center justify-between"
+              style={{
+                padding: '12px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                color: config.theme === 'dark' ? '#ffffff' : '#1a1a1a',
+                background: config.theme === 'dark' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                backdropFilter: config.blur_effect ? 'blur(30px)' : 'none'
               }}
             >
-              <span className="font-semibold text-sm">{config.header_title}</span>
+              <span>{config.header_title}</span>
               <button
                 onClick={() => setDemoState('bubble')}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '18px',
+                  cursor: 'pointer',
+                  color: config.theme === 'dark' ? '#a0a0a0' : '#666666',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = config.theme === 'dark' ? '#ffffff' : '#1a1a1a';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = config.theme === 'dark' ? '#a0a0a0' : '#666666';
+                }}
               >
-                <X className="w-4 h-4" />
+                ×
               </button>
             </div>
 
-            {/* Powered by Yuno */}
-            <div className="px-3 py-1 text-center border-b" style={{ borderColor: colors.border }}>
-              <span className="text-xs text-gray-500">
-                Powered by <a href="https://helloyuno.com" className="text-blue-500 hover:underline">HelloYuno</a>
-              </span>
+            {/* Powered by Yuno - Exact match */}
+            <div
+              style={{
+                padding: '6px 12px',
+                textAlign: 'center',
+                fontSize: '11px',
+                color: config.theme === 'dark' ? '#a0a0a0' : '#666666',
+                background: 'rgba(0, 0, 0, 0.02)',
+                borderBottom: `1px solid ${config.theme === 'dark' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(0, 0, 0, 0.1)'}`
+              }}
+            >
+              Powered by <a 
+                href="https://helloyuno.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  color: config.primary_color,
+                  textDecoration: 'none',
+                  fontWeight: '500'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.textDecoration = 'underline';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.textDecoration = 'none';
+                }}
+              >
+                HelloYuno
+              </a>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 p-3 overflow-y-auto space-y-3">
+            {/* Messages - Exact match */}
+            <div 
+              className="flex-1 overflow-y-auto p-3"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
+              }}
+            >
               {chatMessages.map((msg, index) => (
                 <div
                   key={index}
-                  className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={msg.type === 'user' ? 'msg user' : 'msg bot'}
+                  style={{
+                    alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start',
+                    marginLeft: msg.type === 'user' ? 'auto' : '0',
+                    marginRight: msg.type === 'user' ? '0' : 'auto',
+                    width: msg.type === 'user' ? '100%' : 'auto',
+                    display: 'flex',
+                    justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start'
+                  }}
                 >
                   <div
-                    className={`max-w-[80%] p-2 rounded-lg text-xs ${
-                      msg.type === 'user'
-                        ? 'text-white'
-                        : ''
-                    }`}
+                    className="chatbot-bubble"
                     style={{
-                      background: msg.type === 'user' ? config.primary_color : (config.theme === 'dark' ? '#374151' : '#F3F4F6'),
-                      color: msg.type === 'user' ? '#ffffff' : colors.text,
-                      border: msg.type === 'bot' ? `1px solid ${colors.border}` : 'none'
+                      position: 'relative',
+                      padding: '12px 16px',
+                      borderRadius: '18px',
+                      maxWidth: '80%',
+                      lineHeight: '1.5',
+                      fontSize: '14px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      fontWeight: '400',
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word',
+                      hyphens: 'auto',
+                      whiteSpace: 'pre-wrap',
+                      background: msg.type === 'user' ? 
+                        config.primary_color : 
+                        (config.theme === 'dark' ? 'rgba(20, 20, 20, 0.95)' : 'rgba(248, 248, 248, 0.98)'),
+                      color: msg.type === 'user' ? 
+                        '#ffffff' : 
+                        (config.theme === 'dark' ? '#ffffff' : '#1a1a1a'),
+                      border: msg.type === 'bot' ? 
+                        `1px solid ${config.theme === 'dark' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(0, 0, 0, 0.1)'}` : 
+                        'none',
+                      display: 'inline-block',
+                      textAlign: 'left'
                     }}
                   >
                     {msg.message}
+                    {/* Tail for message bubbles */}
+                    <div
+                      style={{
+                        content: '',
+                        position: 'absolute',
+                        bottom: '-8px',
+                        [msg.type === 'user' ? 'right' : 'left']: '20px',
+                        borderWidth: '8px 8px 0 8px',
+                        borderStyle: 'solid',
+                        borderColor: `${msg.type === 'user' ? 
+                          config.primary_color : 
+                          (config.theme === 'dark' ? 'rgba(20, 20, 20, 0.95)' : 'rgba(248, 248, 248, 0.98)')
+                        } transparent transparent transparent`
+                      }}
+                    />
                   </div>
                 </div>
               ))}
               {showTyping && (
                 <div className="flex justify-start">
                   <div
-                    className="p-2 rounded-lg"
+                    className="flex items-center gap-1 p-3 rounded-2xl"
                     style={{
-                      background: (config.theme === 'dark' ? '#374151' : '#F3F4F6'),
-                      border: `1px solid ${colors.border}`
+                      background: config.theme === 'dark' ? 'rgba(20, 20, 20, 0.95)' : 'rgba(248, 248, 248, 0.98)',
+                      border: `1px solid ${config.theme === 'dark' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(0, 0, 0, 0.1)'}`
                     }}
                   >
+                    <span style={{ fontSize: '16px', marginRight: '6px' }}>💭</span>
                     <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Input */}
-            <div className="flex border-t" style={{ borderColor: colors.border }}>
+            {/* Input Row - Exact match */}
+            <div
+              className="flex"
+              style={{
+                borderTop: `1px solid ${config.theme === 'dark' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(0, 0, 0, 0.1)'}`,
+                background: config.theme === 'dark' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                backdropFilter: config.blur_effect ? 'blur(30px)' : 'none'
+              }}
+            >
               <input
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendDemoMessage()}
                 placeholder={config.placeholder}
-                className="flex-1 p-2 text-xs bg-transparent outline-none"
-                style={{ color: colors.text }}
+                style={{
+                  flex: '1',
+                  border: 'none',
+                  padding: '10px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  background: 'transparent',
+                  color: config.theme === 'dark' ? '#ffffff' : '#1a1a1a'
+                }}
               />
               <button
                 onClick={sendDemoMessage}
-                className="p-2 text-white"
-                style={{ background: config.primary_color }}
+                style={{
+                  background: config.accent_color ? 
+                    `linear-gradient(to right, ${config.primary_color}, ${config.accent_color})` : 
+                    config.primary_color,
+                  color: '#fff',
+                  border: 'none',
+                  padding: '0 16px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  transition: 'background 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = config.accent_color ? 
+                    `linear-gradient(to right, ${config.accent_color}, ${config.primary_color})` : 
+                    config.primary_color;
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = config.accent_color ? 
+                    `linear-gradient(to right, ${config.primary_color}, ${config.accent_color})` : 
+                    config.primary_color;
+                }}
               >
-                <Send className="w-3 h-3" />
+                Send
               </button>
             </div>
           </div>
@@ -1033,9 +1301,13 @@ const YunoCustomizerPage = () => {
 
       {/* CSS Animations */}
       <style jsx>{`
-        @keyframes slideIn {
+        @keyframes slideInUp {
           from { transform: translateY(20px); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slideIn {
+          from { transform: translateY(20px) scale(0.95); opacity: 0; }
+          to { transform: translateY(0) scale(1); opacity: 1; }
         }
         @keyframes fadeIn {
           from { opacity: 0; }
