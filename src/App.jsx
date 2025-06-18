@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { MessageCircle, Zap, Globe, BarChart3, Shield, Sparkles, Moon, Sun, Play, ArrowRight, Check, Star, Users, Clock, HeadphonesIcon, ChevronDown, ChevronUp, Quote, TrendingUp, Rocket, Target, Mail, Phone, MapPin, Send } from 'lucide-react';
+import YunoCustomizer from './components/YunoCustomizerPage.jsx';
 
 // Theme Context
 const ThemeContext = createContext();
@@ -294,7 +295,7 @@ const YunoChatDemo = () => {
     if (!document.querySelector('script[src*="yuno-4.js"]')) {
       const script = document.createElement('script');
       script.src = '/yuno-4.js';
-      script.setAttribute('site_id', 'yuno_demo');
+      script.setAttribute('site_id', 'yuno');
       script.defer = true;
       document.head.appendChild(script);
     }
@@ -1208,6 +1209,7 @@ const Footer = () => {
               <a href="#features" className="block text-gray-400 hover:text-white transition-colors">Features</a>
               <a href="#PilotProgramSection" className="block text-gray-400 hover:text-white transition-colors">Join Beta</a>
               <button onClick={() => window.showYunoDemo?.()} className="block text-gray-400 hover:text-white transition-colors text-left">Demo</button>
+              <Link to="/customizer" className="block text-gray-400 hover:text-white transition-colors">Widget Customizer</Link>
               <Link to="/help" className="block text-gray-400 hover:text-white transition-colors">Help Center</Link>
             </div>
           </div>
@@ -1974,6 +1976,7 @@ const App = () => {
             <Route path="/help" element={<HelpPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/customizer" element={<YunoCustomizer />} />
           </Routes>
           <Footer />
         </div>
