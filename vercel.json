@@ -15,13 +15,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "app/api/contact.js": {
-      "runtime": "nodejs18.x"
-    },
-    "app/api/pilot-leads.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
+  ]
+}}

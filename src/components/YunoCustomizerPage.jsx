@@ -81,6 +81,8 @@ const MobileFallback = () => {
   );
 };
 
+
+
 const YunoCustomizerPage = () => {
   const isMobile = useIsMobile();
 
@@ -271,7 +273,24 @@ const YunoCustomizerPage = () => {
       }]);
     }, 1500);
   };
-
+  
+  useEffect(() => {
+  // Force remove any Yuno widgets on customizer page
+  const removeYuno = () => {
+    const widgets = document.querySelectorAll('yuno-chat');
+    widgets.forEach(widget => widget.remove());
+    
+    const scripts = document.querySelectorAll('script[src*="yuno"]');
+    scripts.forEach(script => script.remove());
+  };
+  
+  removeYuno();
+  
+  // Keep checking and removing every second
+  const interval = setInterval(removeYuno, 1000);
+  
+  return () => clearInterval(interval);
+}, []);
   // Auto-show teaser demo
   useEffect(() => {
     if (config.auto_show && config.show_teaser && demoState === 'bubble') {

@@ -253,8 +253,45 @@ const TypingAnimation = ({ text, speed = 80, className = "" }) => {
 // Yuno Chat Demo Component
 const YunoChatDemo = () => {
   const { isDark } = useTheme();
+  const [shouldLoadYuno, setShouldLoadYuno] = useState(true);
+
+  // Check current route to determine if Yuno should load
+  useEffect(() => {
+    const checkRoute = () => {
+      const currentPath = window.location.pathname;
+      // Don't load Yuno on customizer page
+      setShouldLoadYuno(!currentPath.includes('/customizer'));
+    };
+
+    checkRoute();
+    
+    // Listen for route changes
+    window.addEventListener('popstate', checkRoute);
+    
+    return () => {
+      window.removeEventListener('popstate', checkRoute);
+    };
+  }, []);
 
   useEffect(() => {
+    if (!shouldLoadYuno) {
+      // Remove Yuno widget if it exists
+      const existingWidget = document.querySelector('yuno-chat');
+      if (existingWidget) {
+        existingWidget.remove();
+      }
+      
+      // Remove Yuno script if it exists
+      const existingScript = document.querySelector('script[src*="yuno-5.js"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+      
+      // Clean up global function
+      delete window.showYunoDemo;
+      return;
+    }
+
     // Function to show Yuno demo
     const showYunoDemo = () => {
       // Check if Yuno widget exists
@@ -294,7 +331,7 @@ const YunoChatDemo = () => {
     // Add global function for demo trigger
     window.showYunoDemo = showYunoDemo;
 
-    // Load Yuno script on page load
+    // Load Yuno script on page load only if not on customizer page
     if (!document.querySelector('script[src*="yuno-5.js"]')) {
       const script = document.createElement('script');
       script.src = '/yuno-5.js';
@@ -304,13 +341,17 @@ const YunoChatDemo = () => {
     }
 
     return () => {
-      // Cleanup
-      delete window.showYunoDemo;
+      // Cleanup only if we should not load Yuno
+      if (!shouldLoadYuno) {
+        delete window.showYunoDemo;
+      }
     };
-  }, []);
+  }, [shouldLoadYuno]);
 
   // Update theme when it changes
   useEffect(() => {
+    if (!shouldLoadYuno) return;
+    
     const yunoWidget = document.querySelector('yuno-chat');
     if (yunoWidget && yunoWidget.updateTheme) {
       // If your widget has an updateTheme method
@@ -319,7 +360,7 @@ const YunoChatDemo = () => {
       // Or update via attribute
       yunoWidget.setAttribute('theme', isDark ? 'dark' : 'light');
     }
-  }, [isDark]);
+  }, [isDark, shouldLoadYuno]);
 
   return null;
 };
@@ -337,6 +378,21 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleDemoClick = (e) => {
+    e.preventDefault();
+    const currentPath = window.location.pathname;
+    
+    if (currentPath === '/demo') {
+      // Already on demo page, just trigger the demo
+      if (window.showYunoDemo) {
+        window.showYunoDemo();
+      }
+    } else {
+      // Navigate to demo page
+      window.location.href = '/demo';
+    }
+  };
 
   return (
     <header className={`
@@ -364,16 +420,20 @@ const Header = () => {
         <nav className="hidden lg:flex items-center gap-8">
           <a href="#features" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Features</a>
           <a href="#how-it-works" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">How it Works</a>
-          <Link to="/demo" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Demo</Link>
+          <button onClick={handleDemoClick} className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Demo</button>
           <a 
             href="#pilot-program" 
             className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById('pilot-program')?.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-              });
+              if (window.location.pathname !== '/') {
+                window.location.href = '/#pilot-program';
+              } else {
+                document.getElementById('pilot-program')?.scrollIntoView({ 
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }
             }}
           >
             Join Beta
@@ -395,10 +455,14 @@ const Header = () => {
             variant="secondary" 
             className="text-sm sm:text-base px-3 py-2 sm:px-8 sm:py-4"
             onClick={() => {
-              document.getElementById('pilot-program')?.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-              });
+              if (window.location.pathname !== '/') {
+                window.location.href = '/#pilot-program';
+              } else {
+                document.getElementById('pilot-program')?.scrollIntoView({ 
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }
             }}
           >
             {/* Show different text on mobile vs desktop */}
